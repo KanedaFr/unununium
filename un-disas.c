@@ -20,19 +20,27 @@ int main(int argc, char *argv[])
 {
 	FILE *in;
 	u32 i, n;
+	int argIdx;
 
 	if (argc < 2) {
-		fprintf(stderr, "usage: %s <rom-file> [-vsmile]\n", argv[0]);
+		fprintf(stderr, "usage: %s <rom-file> [-vsmile] [-minimal]\n", argv[0]);
 		exit(1);
 	}
 
 	//
-	if (argc==3){
-		if (strcmp("-vsmile", argv[2])!= 0){
-			fprintf(stderr,"Invalid argument %s\n", argv[2]);
-			exit(1);
+	if (argc > 2){
+		for (argIdx=2; argIdx< argc; argIdx++){
+			if (strcmp("-vsmile", argv[argIdx]) == 0){
+				isVsmile = 1;
+			}
+			else if (strcmp("-minimal", argv[argIdx]) == 0){
+				verbose = 0;
+			}
+			else {
+				fprintf(stderr,"Invalid argument %s\n", argv[argIdx]);
+				exit(1);
+			}
 		}
-		isVsmile = 1;
 	}
 
 	//
