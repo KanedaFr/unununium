@@ -88,10 +88,75 @@ static char *getPPUName(u16 i){
 	}else if ((i>=0x2C00) && (i<0x3000)){
 		return getPPUSpriteRegisterName((i - 0x2C00)/4, i%4);
 	}
+	
+	switch (i)
+	{
+	case 0x281C:
+		sprintf(bufferString, "PPU_VerticalScale");
+		break;
+	case 0x281D:
+		sprintf(bufferString, "PPU_VerticalMovement");
+		break;
+	case 0x2820:
+		sprintf(bufferString, "PPU_Layer1_segment_pointer");
+		break;
+	case 0x2821:
+		sprintf(bufferString, "PPU_Layer2_segment_pointer");
+		break;
+	case 0x2822:
+		sprintf(bufferString, "PPU_Sprite_segment_pointer");
+		break;
+	case 0x282A:
+		sprintf(bufferString, "PPU_BlendingLevel"); // (2 bits)");
+		break;
+	case 0x2830:
+		sprintf(bufferString, "PPU_FadeLevel"); // (8 bits)");
+		break;
+	case 0x2836:
+		sprintf(bufferString, "PPU_VerticalCompare4IRQ"); // (9 bits)");
+		break;
+	case 0x2837:
+		sprintf(bufferString, "PPU_HorizontalCompare4IRQ"); // (9 bits)");
+		break;
+	case 0x283C:
+		sprintf(bufferString, "PPU_HueSaturationAdjust");// (8 bits each)");
+		break;
+	case 0x283D:
+		sprintf(bufferString, "PPU_LFPInterlace"); // (bit 2), Interlace (bit 0)");
+		break;
+	case 0x283E:
+		sprintf(bufferString, "PPU_LightpenY");// (9 bits)");
+		break;
+	case 0x283F:
+		sprintf(bufferString, "PPU_LightpenX"); // (9 bits)");
+		break;
+	case 0x2842:
+		sprintf(bufferString, "PPU_SpritesEnable");
+		break;
+	case 0x2854:
+		sprintf(bufferString, "PPU_LCDControl"); // (bits 4 and 5: framerate, bit 3: CkvSel, bit 2, resolution, bits 1 and 0: color mode)");
+		break;
+	case 0x2862:
+		sprintf(bufferString, "PPU_IRQControl");// (bit 2: DMA, bit 1: VDO, bit 0: blanking)");
+		break;
+	case 0x2863:
+		sprintf(bufferString, "PPU_IRQStatus");// (same layout)");
+		break;
+	case 0x2870:
+		sprintf(bufferString, "DMA_src");
+		break;
+	case 0x2871:
+		sprintf(bufferString, "DMA_dest");
+		break;
+	case 0x2872:
+		sprintf(bufferString, "DMA_length");
+		break;
+	default:
+		sprintf(bufferString, "PPU_%04x", i);
+		break;
+	}
 
 
-
-	sprintf(bufferString, "PPU_%04x", i);
 	return bufferString;
 }
 static char *getAddressName(u16 i){
