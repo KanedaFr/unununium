@@ -7,6 +7,8 @@
 
 #include "types.h"
 
+extern u8 isVsmile;
+
 u32 disas(const u16 *mem, u32 offset);
 
 #endif

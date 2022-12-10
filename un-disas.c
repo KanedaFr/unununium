@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "types.h"
 #include "disas.h"
@@ -12,21 +13,34 @@
 
 static u16 mem[N_MEM];
 
+u8 isVsmile = 0;
+
 int main(int argc, char *argv[])
 {
 	FILE *in;
 	u32 i, n;
 
-	if (argc != 2) {
-		fprintf(stderr, "usage: %s <rom-file>\n", argv[0]);
+	if (argc < 2) {
+		fprintf(stderr, "usage: %s <rom-file> [-vsmile]\n", argv[0]);
 		exit(1);
 	}
 
+	//
+	if (argc==3){
+		if (strcmp("-vsmile", argv[2])!= 0){
+			fprintf(stderr,"Invalid argument %s\n", argv[2]);
+			exit(1);
+		}
+		isVsmile = 1;
+	}
+
+	//
 	in = fopen(argv[1], "rb");
 	if (!in) {
 		perror("Cannot read ROM file");
 		exit(1);
 	}
+	
 
 	n = fread(mem, 2, N_MEM, in);
 

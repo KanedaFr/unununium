@@ -1,3 +1,6 @@
 *.o
 un-disas
 uuu-sdl
+config
+.DS_Store
+*.bin
