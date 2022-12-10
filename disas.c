@@ -61,39 +61,37 @@ char bufferString[256];
 
 static char *getPPULayerRegisterName(u8 layerID, u8 registerID){
 	static const char *registers[] = {
-		"x", "y", "attributes", "control", "tile_map_addr","tile_attr_addr", "tile_data_seg" 
+		"SCROLL_X", "SCROLL_Y", "ATTR", "CTRL", "TILE_ADDR ","ATTR_ADDR "
 	};
 	
-	sprintf(bufferString, "PPU_layer%d_%s", layerID, registers[registerID]);
+	sprintf(bufferString, "PPU_BG%d_%s", layerID+1, registers[registerID]);
 	return bufferString;
 }
 static char *getPPUSpriteRegisterName(u8 spriteID, u8 registerID){
 	static const char *registers[] = {
-		"tileID", "x", "y", "attributes"
+		"TILE", "X", "Y", "ATTR"
 	};
 	
-	sprintf(bufferString, "PPU_sprite%03d_%s", spriteID, registers[registerID]);
+	sprintf(bufferString, "PPU_SPRITE_%s(%03d)", registers[registerID], spriteID);
 	return bufferString;
 }
 static char *getPPUName(u16 i){
 	if ((i>=0x2810) && (i<0x2816)){
 		return getPPULayerRegisterName(0, i-0x2810);
 	}
-	else if ((i>=0x2816) && (i<0x281C)){
+	else if ((i>=0x2816) && (i<0x281c)){
 		return getPPULayerRegisterName(1, i-0x2816);
 	}
 	else if ((i>=0x2900) && (i<0x2A00)){
-		//Text horizontal control
-		sprintf(bufferString, "PPU_TextHControl_%03d", i-0x2900);
+		sprintf(bufferString, "PPU_LINE_SCROLL(%03d)", i-0x2900);
 		return bufferString;
 	}	
 	else if ((i>=0x2A00) && (i<0x2B00)){
-		//	Horizontal scale
-		sprintf(bufferString, "PPU_HScale_%03d", i-0x2A00);
+		sprintf(bufferString, "PPU_LINE_COMPRESS(%03d)", i-0x2A00);
 		return bufferString;
 	}
 	else if ((i>=0x2B00) && (i<0x2C00)){
-		sprintf(bufferString, "PPU_color%03d", i-0x2B00);
+		sprintf(bufferString, "PPU_COLOR(%03d)", i-0x2B00);
 		return bufferString;
 	}
 	else if ((i>=0x2C00) && (i<0x3000)){
@@ -104,66 +102,94 @@ static char *getPPUName(u16 i){
 	switch (i)
 	{
 	case 0x281C:
-		sprintf(bufferString, "PPU_VerticalScale");
+		sprintf(bufferString, "PPU_VERT_COMPRESS_AMOUNT");
 		break;
 	case 0x281D:
-		sprintf(bufferString, "PPU_VerticalMovement");
+		sprintf(bufferString, "PPU_VERT_COMPRESS_OFFSET");
 		break;
 	case 0x2820:
-		sprintf(bufferString, "PPU_Layer1_segment_pointer");
+		sprintf(bufferString, "PPU_BG1_SEGMENT_ADDR");
 		break;
 	case 0x2821:
-		sprintf(bufferString, "PPU_Layer2_segment_pointer");
+		sprintf(bufferString, "PPU_BG2_SEGMENT_ADDR");
 		break;
 	case 0x2822:
-		sprintf(bufferString, "PPU_Sprite_segment_pointer");
+		sprintf(bufferString, "PPU_SPRITE_SEGMENT_ADDR");
 		break;
 	case 0x282A:
-		sprintf(bufferString, "PPU_BlendingLevel"); // (2 bits)");
+		sprintf(bufferString, "PPU_BLEND_LEVEL"); // (2 bits)");
+		break;
+	//case 0x282B:case 0x282C:case 0x282D:case 0x282E:case 0x282F:
+	//	sprintf(bufferString, "PPU_%04x", i);
 		break;
 	case 0x2830:
-		sprintf(bufferString, "PPU_FadeLevel"); // (8 bits)");
+		sprintf(bufferString, "PPU_FADE_CTRL"); // (8 bits)");
 		break;
+	//case 0x2831:case 0x2832:case 0x2833:case 0x2834:case 0x2835:
+	//	sprintf(bufferString, "PPU_%04x", i);
+	//	break;
 	case 0x2836:
-		sprintf(bufferString, "PPU_VerticalCompare4IRQ"); // (9 bits)");
+		sprintf(bufferString, "PPU_IRQ_POS_Y"); // (9 bits)");
 		break;
 	case 0x2837:
-		sprintf(bufferString, "PPU_HorizontalCompare4IRQ"); // (9 bits)");
+		sprintf(bufferString, "PPU_IRQ_POS_X"); // (9 bits)");
 		break;
+	case 0x2838:
+		sprintf(bufferString, "PPU_CURRENT_LINE");
+		break;
+	case 0x2839:
+		sprintf(bufferString, "PPU_LIGHTPEN_LATCH_1ST_LINE");
+		break;
+	//case 0x283A:case 0x283B:
+	//	sprintf(bufferString, "PPU_%04x", i);
+	//	break;
 	case 0x283C:
-		sprintf(bufferString, "PPU_HueSaturationAdjust");// (8 bits each)");
+		sprintf(bufferString, "PPU_TV_CTRL1");
 		break;
 	case 0x283D:
-		sprintf(bufferString, "PPU_LFPInterlace"); // (bit 2), Interlace (bit 0)");
+		sprintf(bufferString, "PPU_TV_CTRL2"); 
 		break;
 	case 0x283E:
-		sprintf(bufferString, "PPU_LightpenY");// (9 bits)");
+		sprintf(bufferString, "PPU_LIGHTPEN_Y");// (9 bits)");
 		break;
 	case 0x283F:
-		sprintf(bufferString, "PPU_LightpenX"); // (9 bits)");
+		sprintf(bufferString, "PPU_LIGHTPEN_X"); // (9 bits)");
 		break;
+	//case 0x2840:case 0x2841:
+	//	sprintf(bufferString, "PPU_%04x", i);
+	//	break;
 	case 0x2842:
-		sprintf(bufferString, "PPU_SpritesEnable");
+		sprintf(bufferString, "PPU_SPRITE_CTRL");
 		break;
+	//case 0x2843...0x2853:
+	//	sprintf(bufferString, "PPU_%04x", i);
+	//	break;
 	case 0x2854:
-		sprintf(bufferString, "PPU_LCDControl"); // (bits 4 and 5: framerate, bit 3: CkvSel, bit 2, resolution, bits 1 and 0: color mode)");
+		sprintf(bufferString, "PPU_STN_LCD_CTRL"); // (bits 4 and 5: framerate, bit 3: CkvSel, bit 2, resolution, bits 1 and 0: color mode)");
 		break;
+	//case 0x2855...0x2861:
+	//	sprintf(bufferString, "PPU_%04x", i);
+	//	break;
 	case 0x2862:
-		sprintf(bufferString, "PPU_IRQControl");// (bit 2: DMA, bit 1: VDO, bit 0: blanking)");
+		sprintf(bufferString, "PPU_IRQ_ENABLE");// (bit 2: DMA, bit 1: VDO, bit 0: blanking)");
 		break;
 	case 0x2863:
-		sprintf(bufferString, "PPU_IRQStatus");// (same layout)");
+		sprintf(bufferString, "PPU_IRQ_STATUS");// (same layout)");
 		break;
+	//case 0x2864...0x286F:
+	//	sprintf(bufferString, "PPU_%04x", i);
+	//	break;
 	case 0x2870:
-		sprintf(bufferString, "DMA_src");
+		sprintf(bufferString, "PPU_SPRITE_DMA_SRC");
 		break;
 	case 0x2871:
-		sprintf(bufferString, "DMA_dest");
+		sprintf(bufferString, "PPU_SPRITE_DMA_DEST");
 		break;
 	case 0x2872:
-		sprintf(bufferString, "DMA_length");
+		sprintf(bufferString, "PPU_SPRITE_DMA_LEN");
 		break;
 	default:
+		fprintf(stderr,"Unknow access to PPU_%04x\n", i);
 		sprintf(bufferString, "PPU_%04x", i);
 		break;
 	}
