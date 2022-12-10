@@ -9,6 +9,7 @@
 
 #include "disas.h"
 
+u32 disamOffset;
 
 static const char *regs[] = { "sp", "r1", "r2", "r3", "r4", "bp", "sr", "pc" };
 
@@ -189,13 +190,212 @@ static char *getPPUName(u16 i){
 		sprintf(bufferString, "PPU_SPRITE_DMA_LEN");
 		break;
 	default:
-		fprintf(stderr,"Unknow access to PPU_%04x\n", i);
+		fprintf(stderr,"Unknow access to PPU_%04x at 0x%x\n", i, disamOffset);
 		sprintf(bufferString, "PPU_%04x", i);
 		break;
 	}
 
 
 	return bufferString;
+}
+
+static char *getIOName(u16 i){
+	static const char *ionames[] = {
+		"A", "B", "C"
+	}; 
+	static const char *ioregisters[] = {
+		"DATA", "BUFFER", "DIR", "ATTRIB", "MASK"
+	}; 
+	static const char *tmregisters[] = {
+		"DATA", "CTRL", "ON", "IRQCLR "
+	}; 
+
+	if ((i>0x3D00) && (i<0x3D10)){
+		sprintf(bufferString, "GPIO_%s_%s", ionames[(i-0x3D01)/5], ioregisters[(i-0x3D01)%5]);
+		return bufferString;
+	}
+	else if ((i>0x3d11) && (i<0x3d1A)){
+		sprintf(bufferString, "TIMER_%s_%s", ionames[(i-0x3d12)/4], tmregisters[(i-0x3d12)%4]);
+		return bufferString;
+	}
+	
+	
+	switch (i)
+	{
+	case 0x3d00:
+		sprintf(bufferString, "GPIO_MODE");
+		break;
+	case 0x3d10:
+		sprintf(bufferString, "TIMEBASE_SETUP");
+		break;
+	case 0x3d11:
+		sprintf(bufferString, "TIMEBASE_CLEAR");
+		break;
+	case 0x3d1c:
+		sprintf(bufferString, "CURRENT_LINE");
+		break;
+	case 0x3d20:
+		sprintf(bufferString, "SYSTEM_CTRL");
+		break;
+	case 0x3d21:
+		sprintf(bufferString, "IO_IRQ_ENABLE");
+		break;
+	case 0x3d22:
+		sprintf(bufferString, "IO_IRQ_STATUS");
+		break;
+	case 0x3d23:
+		sprintf(bufferString, "EXT_MEMORY_CTRL");
+		break;
+	case 0x3d24:
+		sprintf(bufferString, "WATCHDOG_CLEAR");
+		break;
+	case 0x3d25:
+		sprintf(bufferString, "ADC_CTRL");
+		break;
+	case 0x3d26:
+		sprintf(bufferString, "ADC_PAD");
+		break;
+	case 0x3d27:
+		sprintf(bufferString, "ADC_DATA");
+		break;
+	case 0x3d28:
+		sprintf(bufferString, "SLEEP_MODE");
+		break;
+	case 0x3d29:
+		sprintf(bufferString, "WAKEUP_SOURCE");
+		break;
+	case 0x3d2A:
+		sprintf(bufferString, "WAKEUP_TIME");
+		break;
+	case 0x3d2b:
+		sprintf(bufferString, "TV_SYSTEM");
+		break;
+	case 0x3d2c:
+		sprintf(bufferString, "PRNG_GEN1");
+		break;
+	case 0x3d2d:
+		sprintf(bufferString, "PRNG_GEN2");
+		break;
+	case 0x3d2e:
+		sprintf(bufferString, "FIQ_SELECT");
+		break;
+	case 0x3d2f:
+		sprintf(bufferString, "DS_ACCESS");
+		break;
+	case 0x3d30:
+		sprintf(bufferString, "UART_CTRL");
+		break;
+	case 0x3d31:
+		sprintf(bufferString, "UART_STATUS");
+		break;
+	case 0x3d32:
+		sprintf(bufferString, "UART_RESET");
+		break;
+	case 0x3d33:
+		sprintf(bufferString, "UART_BAUD_LO");
+		break;
+	case 0x3d34:
+		sprintf(bufferString, "UART_BAUD_HI");
+		break;
+	case 0x3d35:
+		sprintf(bufferString, "UART_TXBUF");
+		break;
+	case 0x3d36:
+		sprintf(bufferString, "UART_RXBUF");
+		break;
+	case 0x3d37:
+		sprintf(bufferString, "UART_RXFIFO");
+		break;
+	case 0x3d40:
+		sprintf(bufferString, "SPI_CTRL");
+		break;
+	case 0x3d41:
+		sprintf(bufferString, "SPI_TXSTATUS");
+		break;
+	case 0x3d42:
+		sprintf(bufferString, "SPI_TXDATA");
+		break;
+	case 0x3d43:
+		sprintf(bufferString, "SPI_RXSTATUS");
+		break;
+	case 0x3d44:
+		sprintf(bufferString, "SPI_RXDATA");
+		break;
+	case 0x3d45:
+		sprintf(bufferString, "SPI_MISC");
+		break;
+	case 0x3d50:
+		sprintf(bufferString, "SIO_SETUP");
+		break;
+	case 0x3d51:
+		sprintf(bufferString, "SIO_STATUS");
+		break;
+	case 0x3d52:
+		sprintf(bufferString, "SIO_ADDR_LO");
+		break;
+	case 0x3d53:
+		sprintf(bufferString, "SIO_ADDR_HI");
+		break;
+	case 0x3d54:
+		sprintf(bufferString, "SIO_DATA");
+		break;
+	case 0x3d55:
+		sprintf(bufferString, "SIO_AUTO_TX_NUM");
+		break;
+	case 0x3d58:
+		sprintf(bufferString, "I2C_CMD");
+		break;
+	case 0x3d59:
+		sprintf(bufferString, "I2C_STATUS");
+		break;
+	case 0x3d5A:
+		sprintf(bufferString, "I2C_ACCESS");
+		break;
+	case 0x3d5B:
+		sprintf(bufferString, "I2C_ADDR");
+		break;
+	case 0x3d5C:
+		sprintf(bufferString, "I2C_SUBADDR");
+		break;
+	case 0x3d5d:
+		sprintf(bufferString, "I2C_DATA_OUT");
+		break;
+	case 0x3d5e:
+		sprintf(bufferString, "I2C_DATA_IN");
+		break;
+	case 0x3d5f:
+		sprintf(bufferString, "I2C_MODE");
+		break;
+	case 0x3d60:
+		sprintf(bufferString, "REGULATOR_CTRL");
+		break;
+	case 0x3d61:
+		sprintf(bufferString, "CLOCK_CTRL");
+		break;
+	case 0x3d62:
+		sprintf(bufferString, "IODRIVE_CTRL");
+		break;
+	case 0x3e00:
+		sprintf(bufferString, "SYSDMA_SRC_LO");
+		break;
+	case 0x3e01:
+		sprintf(bufferString, "SYSDMA_SRC_HI");
+		break;
+	case 0x3e02:
+		sprintf(bufferString, "SYSDMA_LEN");
+		break;
+	case 0x3e03:
+		sprintf(bufferString, "SYSDMA_DEST");
+		break;
+	default:
+		fprintf(stderr,"Unknow access to GPIO_%04x at 0x%x\n", i, disamOffset);
+		sprintf(bufferString, "GPIO_%04x", i);
+		break;
+	}
+
+
+	return bufferString;
+
 }
 static char *getAddressName(u16 i){
 	if (!isVsmile)	{
@@ -220,7 +420,7 @@ static char *getAddressName(u16 i){
 		sprintf(bufferString, "%04x", i);
 	}
 	else if (i < 0x3e04){
-		sprintf(bufferString, "IO_%04x", i);
+		return getIOName(i);
 	}
 	else
 		sprintf(bufferString, "%04x", i);
@@ -233,6 +433,7 @@ u32 disas(const u16 *mem, u32 offset)
 	u16 op, ximm = 0x0bad;
 	u32 len = 1;
 
+	disamOffset = offset;
 	printf("%04x: ", offset);
 
 	op = mem[offset++];
