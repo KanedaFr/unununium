@@ -82,13 +82,25 @@ static char *getPPUName(u16 i){
 	else if ((i>=0x2816) && (i<0x281C)){
 		return getPPULayerRegisterName(1, i-0x2816);
 	}
+	else if ((i>=0x2900) && (i<0x2A00)){
+		//Text horizontal control
+		sprintf(bufferString, "PPU_TextHControl_%03d", i-0x2900);
+		return bufferString;
+	}	
+	else if ((i>=0x2A00) && (i<0x2B00)){
+		//	Horizontal scale
+		sprintf(bufferString, "PPU_HScale_%03d", i-0x2A00);
+		return bufferString;
+	}
 	else if ((i>=0x2B00) && (i<0x2C00)){
 		sprintf(bufferString, "PPU_color%03d", i-0x2B00);
 		return bufferString;
-	}else if ((i>=0x2C00) && (i<0x3000)){
+	}
+	else if ((i>=0x2C00) && (i<0x3000)){
 		return getPPUSpriteRegisterName((i - 0x2C00)/4, i%4);
 	}
 	
+
 	switch (i)
 	{
 	case 0x281C:
