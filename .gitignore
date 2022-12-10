@@ -4,3 +4,4 @@ uuu-sdl
 config
 .DS_Store
 *.bin
+*.asm

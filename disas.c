@@ -57,6 +57,70 @@ static void print_indirect_op(u8 opN, u8 opB)
 	printf(forms[opN & 3], regs[opB]);
 }
 
+char bufferString[256];	
+
+static char *getPPULayerRegisterName(u8 layerID, u8 registerID){
+	static const char *registers[] = {
+		"x", "y", "attributes", "control", "tile_map_addr","tile_attr_addr", "tile_data_seg" 
+	};
+	
+	sprintf(bufferString, "PPU_layer%d_%s", layerID, registers[registerID]);
+	return bufferString;
+}
+static char *getPPUSpriteRegisterName(u8 spriteID, u8 registerID){
+	static const char *registers[] = {
+		"tileID", "x", "y", "attributes"
+	};
+	
+	sprintf(bufferString, "PPU_sprite%03d_%s", spriteID, registers[registerID]);
+	return bufferString;
+}
+static char *getPPUName(u16 i){
+	if ((i>=0x2810) && (i<0x2816)){
+		return getPPULayerRegisterName(0, i-0x2810);
+	}
+	else if ((i>=0x2816) && (i<0x281C)){
+		return getPPULayerRegisterName(1, i-0x2816);
+	}
+	else if ((i>=0x2C00) && (i<0x3000)){
+		return getPPUSpriteRegisterName((i - 0x2C00)/4, i%4);
+	}
+
+
+
+	sprintf(bufferString, "PPU_%04x", i);
+	return bufferString;
+}
+static char *getAddressName(u16 i){
+	if (!isVsmile)	{
+		sprintf(bufferString, "%04x", i);
+		return bufferString;
+	}
+
+	sprintf(bufferString, "<bad>");
+
+	if (i < 0x2800)
+	{
+		sprintf(bufferString, "%04x", i);
+	}
+	else if (i < 0x3000){
+		return getPPUName(i);
+	}
+	else if (i < 0x3800){
+		sprintf(bufferString, "SPU_%04x", i);
+	}
+	else if (i < 0x3d00){
+		//TODO : issue error ?
+		sprintf(bufferString, "%04x", i);
+	}
+	else if (i < 0x3e04){
+		sprintf(bufferString, "IO_%04x", i);
+	}
+	else
+		sprintf(bufferString, "%04x", i);
+
+	return bufferString;
+}
 u32 disas(const u16 *mem, u32 offset)
 {
 	u8 op0, opA, op1, opN, opB, opimm;
@@ -91,12 +155,13 @@ u32 disas(const u16 *mem, u32 offset)
 	if ((op0 < 14 && op1 == 4 && (opN == 1 || opN == 2 || opN == 3))
 	 || (op0 == 15 && (op1 == 1 || op1 == 2))) {
 		ximm = mem[offset++];
-		printf("%04x %04x   ", op, ximm);
+		if (verbose)	printf("%04x %04x   ", op, ximm);
 		len = 2;
-	} else
+	} else if (verbose)
 		printf("%04x        ", op);
 
-	printf("%x %x %x %x %x   ", op0, opA, op1, opN, opB);
+	if (verbose)
+		printf("%x %x %x %x %x   ", op0, opA, op1, opN, opB);
 
 
 	// all-zero and all-one are invalid insns:
@@ -217,7 +282,10 @@ u32 disas(const u16 *mem, u32 offset)
 			if (op0 != 4 && op0 != 12)
 				printf("%s = ", regs[opA]);
 			print_alu_op3(op0, opB);
-			printf("%04x", ximm);
+			if ((opA>0) && (opA < 5))
+				printf("%s", getAddressName(ximm)); //only if r1...r4
+			else
+				printf("%04x", ximm);
 			print_alu_op_end(op0);
 			return 2;
 
@@ -260,7 +328,7 @@ u32 disas(const u16 *mem, u32 offset)
 		case 3:
 			if (opA != opB)
 				goto bad;
-			printf("[%04x] = %s\n", ximm, regs[opB]);
+			printf("[%s] = %s\n", getAddressName(ximm), regs[opB]);
 			return 2;
 		default:
 			goto bad;

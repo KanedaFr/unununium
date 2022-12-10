@@ -8,6 +8,7 @@
 #include "types.h"
 
 extern u8 isVsmile;
+extern u8 verbose;
 
 u32 disas(const u16 *mem, u32 offset);
 

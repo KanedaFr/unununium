@@ -14,6 +14,7 @@
 static u16 mem[N_MEM];
 
 u8 isVsmile = 0;
+u8 verbose = 1;
 
 int main(int argc, char *argv[])
 {
