@@ -604,7 +604,10 @@ u32 disas(const u16 *mem, u32 offset)
 			if (op0 != 4 && op0 != 12)
 				printf("%s = ", regs[opA]);
 			print_alu_op3(op0, opB);
-			printf("[%04x]", ximm);
+			if ((opA>0) && (opA < 5))
+				printf("[%s]", getAddressName(ximm)); //only if r1...r4
+			else
+				printf("[%04x]", ximm);
 			print_alu_op_end(op0);
 			return 2;
 
